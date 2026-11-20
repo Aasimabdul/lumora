@@ -25,7 +25,7 @@ jobs:
       LUMORA_KEY_ALIAS: ${{ secrets.LUMORA_KEY_ALIAS }}
       LUMORA_KEY_PASSWORD: ${{ secrets.LUMORA_KEY_PASSWORD }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
