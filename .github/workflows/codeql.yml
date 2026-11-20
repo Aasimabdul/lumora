@@ -1,0 +1,27 @@
+# NOTE: not executed yet (no GitHub access from the authoring environment).
+# Treat the first run as its verification; adjust build-mode if CodeQL requires it.
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 3 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+          build-mode: none
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java-kotlin"

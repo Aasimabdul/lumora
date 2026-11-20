@@ -21,6 +21,10 @@ Lumora is an app-level standby clock. It does not replace the Android lock scree
 
 See [docs/BUILDING.md](docs/BUILDING.md). Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Privacy: [PRIVACY_POLICY.md](PRIVACY_POLICY.md). Permissions: [docs/PERMISSIONS.md](docs/PERMISSIONS.md).
 
+## Security
+
+Report vulnerabilities privately — see [SECURITY.md](SECURITY.md).
+
 ## License
 
-MIT — see [LICENSE](LICENSE). Contributions: [CONTRIBUTING.md](CONTRIBUTING.md).
+MIT — see [LICENSE](LICENSE). Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Contributions: [CONTRIBUTING.md](CONTRIBUTING.md).
