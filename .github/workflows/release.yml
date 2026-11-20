@@ -1,0 +1,89 @@
+# Builds and publishes a GitHub release when a tag like v0.1.0 is pushed.
+# NOT executed yet. A release is created ONLY if signing secrets are configured, because an
+# unsigned release APK cannot be installed. Without them the job fails after uploading the
+# unsigned APK as a workflow artifact, and no release is published.
+#
+# Repository secrets (set by the owner, never committed):
+#   LUMORA_KEYSTORE_B64      base64 of the release keystore
+#   LUMORA_KEYSTORE_PASSWORD
+#   LUMORA_KEY_ALIAS
+#   LUMORA_KEY_PASSWORD
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      LUMORA_KEYSTORE_PASSWORD: ${{ secrets.LUMORA_KEYSTORE_PASSWORD }}
+      LUMORA_KEY_ALIAS: ${{ secrets.LUMORA_KEY_ALIAS }}
+      LUMORA_KEY_PASSWORD: ${{ secrets.LUMORA_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Tag must match versionName
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          echo "tag=$TAG versionName=$VERSION"
+          test "$TAG" = "$VERSION"
+
+      - name: Run tests
+        run: ./gradlew :core:test :app:testDebugUnitTest :app:lintDebug
+
+      - name: Decode keystore (if provided)
+        env:
+          KEYSTORE_B64: ${{ secrets.LUMORA_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "LUMORA_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+            echo "SIGNED=true" >> "$GITHUB_ENV"
+          else
+            echo "SIGNED=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build release APK
+        run: ./gradlew :app:assembleRelease
+
+      - name: Verify APK
+        run: |
+          APK=$(ls app/build/outputs/apk/release/*.apk | head -n1)
+          test -s "$APK"
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | tail -n1)
+          "$BT/aapt2" dump badging "$APK" | grep -E "^package:"
+          if [ "$SIGNED" = "true" ]; then "$BT/apksigner" verify --verbose "$APK"; fi
+          echo "APK=$APK" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lumora-release-apk
+          path: app/build/outputs/apk/release/*.apk
+
+      - name: Refuse to publish an unsigned APK
+        if: env.SIGNED != 'true'
+        run: |
+          echo "::error::No signing keystore configured; not publishing a release."
+          exit 1
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp "$APK" "Lumora-${GITHUB_REF_NAME}.apk"
+          gh release create "$GITHUB_REF_NAME" "Lumora-${GITHUB_REF_NAME}.apk" \
+            --title "Lumora ${GITHUB_REF_NAME}" \
+            --notes-file docs/RELEASE_NOTES.md \
+            --prerelease

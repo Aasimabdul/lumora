@@ -8,7 +8,7 @@ Lumora is an application-level standby clock. It does **not** replace the Androi
 | --- | --- | --- |
 | `core/` (Kotlin/JVM, no Android deps) | Implemented, tested | Theme catalog, time/date formatting, battery mapping, charging-event dedup, notification-preview state machine |
 | `rust-core/` (Rust, no deps) | Implemented, tested, **not linked into Android** | WCAG contrast maths, `readable_foreground`, theme-config validation and sanitising |
-| `app/` (Android, Compose, MVVM) | **Not started** | UI, navigation, DataStore, listener service, standby activity |
+| `app/` (Android, Compose) | Written, **never compiled** | Standby activity, 4-tab main UI, DataStore repository, listener service, 6 theme renderers. Manual DI via `LumoraApp`; no ViewModels yet |
 
 Keeping logic in Android-free modules makes it testable on a plain JVM.
 
@@ -32,4 +32,4 @@ Keeping logic in Android-free modules makes it testable on a plain JVM.
 
 ## Theme catalog vs. rendering
 
-`ThemeCatalog` defines 40 ids/names/categories. Each theme still needs its own Compose renderer with a distinct composition; no renderer exists yet.
+`ThemeCatalog` defines 40 ids/names/categories. `ui/clock/ThemeRenderers.kt` has renderers for 6 (`implementedThemeIds`); the gallery marks the rest "Coming soon" and blocks selecting them. Each remaining theme needs its own distinct composition.

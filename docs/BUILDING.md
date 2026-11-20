@@ -2,10 +2,23 @@
 
 ## Requirements
 
-- JDK 17+ (developed with 21)
-- Rust stable with `rustfmt` and `clippy`
-- Android SDK + build-tools (needed only once the `app` module exists)
-- Android NDK (needed only for Rust-on-Android integration, not yet implemented)
+- JDK 17+
+- Android SDK (platform 35 and build-tools); set `ANDROID_HOME` or `local.properties` (`sdk.dir=...`)
+- Rust stable with `rustfmt` and `clippy` (for `rust-core`)
+- Android NDK — only for future Rust-on-Android integration (not implemented)
+
+## Android app
+
+```bash
+./gradlew :core:test :app:testDebugUnitTest
+./gradlew :app:lintDebug
+./gradlew :app:assembleDebug      # app/build/outputs/apk/debug/
+./gradlew :app:assembleRelease    # signed only if signing env vars are set
+```
+
+Release signing reads these environment variables (never commit keys): `LUMORA_KEYSTORE_PATH`, `LUMORA_KEYSTORE_PASSWORD`, `LUMORA_KEY_ALIAS`, `LUMORA_KEY_PASSWORD`. Without them the release APK is unsigned and not installable.
+
+> The app module has not been compiled yet; the first build may need fixes.
 
 ## Rust core
 
@@ -16,14 +29,10 @@ cargo test
 cargo clippy --all-targets --all-features -- -D warnings
 ```
 
-## Kotlin core (no Android required)
+## Kotlin core without the Android SDK
 
-```bash
-./gradlew :core:test
-```
+`./gradlew` needs the SDK because `:app` is part of the build. To test only the Android-free logic, `scripts/verify-core.sh` compiles and runs `core` tests using the Kotlin compiler, coroutines and JUnit jars bundled with a local Gradle install (`gradle` on `PATH`).
 
-If Maven repositories are unreachable, `scripts/verify-core.sh` compiles and runs the same tests using the Kotlin compiler, coroutines and JUnit jars bundled with a local Gradle installation (`gradle` must be on `PATH`).
+## Releasing
 
-## Android app
-
-Not yet implemented. Planned: `./gradlew lint assembleDebug assembleRelease`. Release signing will use secrets supplied by the repository owner; no keys are ever committed.
+Update `versionName`, push, then push a tag `vX.Y.Z` equal to it. `.github/workflows/release.yml` builds, verifies, and publishes only when signing secrets are configured.

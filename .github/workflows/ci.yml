@@ -1,5 +1,5 @@
 # NOTE: this workflow has not been executed yet (no GitHub access from the authoring
-# environment). Treat the first run as its verification.
+# environment). Treat the first run as its verification and fix what it reports.
 name: CI
 
 on:
@@ -25,7 +25,7 @@ jobs:
       - run: cargo test
       - run: cargo clippy --all-targets --all-features -- -D warnings
 
-  kotlin-core:
+  android:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,10 +33,23 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+      - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :core:test
-
-  # Add once the Android `app` module exists:
-  #   - install Android SDK components (platform, build-tools)
-  #   - ./gradlew lint assembleDebug
-  #   - upload the debug APK as an artifact
+      # :app is part of the build, so Gradle needs the Android SDK even for :core:test.
+      - name: Unit tests
+        run: ./gradlew :core:test :app:testDebugUnitTest
+      - name: Lint
+        run: ./gradlew :app:lintDebug
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug
+      - name: Inspect APK
+        run: |
+          APK=$(ls app/build/outputs/apk/debug/*.apk | head -n1)
+          test -s "$APK"
+          AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | tail -n1)
+          "$AAPT2" dump badging "$APK" | grep -E "^package:|uses-permission"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lumora-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

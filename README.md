@@ -2,16 +2,17 @@
 
 A lightweight, open-source Android standby clock with customizable AMOLED themes, photo backgrounds, battery status, and optional privacy-conscious notification previews.
 
-> **Project status: early.** The Android app is **not built yet**. There is no APK and no release. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for exactly what exists and what has been verified.
+> **Project status: early, not yet built.** The Android app source is written but has **never been compiled**. There is no APK and no release. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for exactly what has and hasn't been verified.
 
-## What exists today
+## What exists
 
-- `core/` — Android-free Kotlin: the 40-theme catalog (ids, names, categories only), time/date formatting, battery mapping, charging-event dedup, and the notification-preview state machine with 10/15/20/25/30 s auto-hide. **50 tests pass.**
-- `rust-core/` — WCAG contrast maths and theme-configuration validation/sanitising. **15 tests pass; rustfmt and clippy clean.** Not yet linked into Android.
+- **`app/`** (uncompiled) — Compose standby clock with live time/date/battery, Home / Themes / Privacy / Settings screens, DataStore settings, opt-in notification previews via `NotificationListenerService`. **6 of 40 themes** have renderers; the rest show as "Coming soon".
+- **`core/`** — Android-free Kotlin: theme catalog (40 ids), time/date formatting, battery mapping, charging-event dedup, settings validation, and the notification-preview state machine with 10/15/20/25/30 s auto-hide. **55 tests pass.**
+- **`rust-core/`** — WCAG contrast maths and theme-config validation. **15 tests pass; rustfmt and clippy clean.** Not yet linked into the app.
 
-## Planned (not implemented)
+## Not implemented yet
 
-Compose UI and 40 rendered themes, standby mode, photo backgrounds and custom themes, DataStore persistence, `NotificationListenerService` integration, permissions & privacy screen, optional charging automation, CI-built APKs.
+34 themes, photo backgrounds, custom themes, charging automation, Rust integration, Compose/instrumented tests, onboarding and about screens.
 
 ## Platform note
 

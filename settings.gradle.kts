@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Lumora"
-include(":core")
+include(":core", ":app")
