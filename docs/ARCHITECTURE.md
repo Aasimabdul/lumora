@@ -8,7 +8,7 @@ Lumora is an application-level standby clock. It does **not** replace the Androi
 | --- | --- | --- |
 | `core/` (Kotlin/JVM, no Android deps) | Implemented, tested | Theme catalog, time/date formatting, battery mapping, charging-event dedup, notification-preview state machine |
 | `rust-core/` (Rust, no deps) | Implemented, tested, **not linked into Android** | WCAG contrast maths, `readable_foreground`, theme-config validation and sanitising |
-| `app/` (Android, Compose) | Written, **never compiled** | Standby activity, 4-tab main UI, DataStore repository, listener service, 6 theme renderers. Manual DI via `LumoraApp`; no ViewModels yet |
+| `app/` (Android, Compose) | Compiles and passes unit tests + lint in CI; **not device-tested** | Standby activity, 4-tab main UI, DataStore repository, listener service, 6 theme renderers. Manual DI via `LumoraApp`; no ViewModels yet |
 
 Keeping logic in Android-free modules makes it testable on a plain JVM.
 

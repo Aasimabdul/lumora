@@ -1,7 +1,9 @@
 # Builds and publishes a GitHub release when a tag like v0.1.0 is pushed.
-# NOT executed yet. A release is created ONLY if signing secrets are configured, because an
-# unsigned release APK cannot be installed. Without them the job fails after uploading the
-# unsigned APK as a workflow artifact, and no release is published.
+#
+# * If signing secrets are configured, builds the release variant, verifies its signature and
+#   publishes it.
+# * If not, builds the DEBUG variant (debug-signed, installable) and publishes it ONLY as a
+#   clearly labelled pre-release. An unsigned release APK is never published (not installable).
 #
 # Repository secrets (set by the owner, never committed):
 #   LUMORA_KEYSTORE_B64      base64 of the release keystore
@@ -41,7 +43,7 @@ jobs:
           echo "tag=$TAG versionName=$VERSION"
           test "$TAG" = "$VERSION"
 
-      - name: Run tests
+      - name: Run tests and lint
         run: ./gradlew :core:test :app:testDebugUnitTest :app:lintDebug
 
       - name: Decode keystore (if provided)
@@ -56,35 +58,52 @@ jobs:
             echo "SIGNED=false" >> "$GITHUB_ENV"
           fi
 
-      - name: Build release APK
-        run: ./gradlew :app:assembleRelease
+      - name: Build APK
+        run: |
+          if [ "$SIGNED" = "true" ]; then
+            ./gradlew :app:assembleRelease
+            echo "APK_DIR=app/build/outputs/apk/release" >> "$GITHUB_ENV"
+            echo "ASSET=Lumora-${GITHUB_REF_NAME}.apk" >> "$GITHUB_ENV"
+          else
+            ./gradlew :app:assembleDebug
+            echo "APK_DIR=app/build/outputs/apk/debug" >> "$GITHUB_ENV"
+            echo "ASSET=Lumora-${GITHUB_REF_NAME}-debug.apk" >> "$GITHUB_ENV"
+          fi
 
       - name: Verify APK
         run: |
-          APK=$(ls app/build/outputs/apk/release/*.apk | head -n1)
+          APK=$(ls "$APK_DIR"/*.apk | head -n1)
           test -s "$APK"
           BT=$(ls -d "$ANDROID_HOME"/build-tools/* | tail -n1)
           "$BT/aapt2" dump badging "$APK" | grep -E "^package:"
-          if [ "$SIGNED" = "true" ]; then "$BT/apksigner" verify --verbose "$APK"; fi
-          echo "APK=$APK" >> "$GITHUB_ENV"
+          "$BT/apksigner" verify --verbose "$APK" | head -5
+          cp "$APK" "$ASSET"
+          sha256sum "$ASSET" | tee "$ASSET.sha256"
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: lumora-release-apk
-          path: app/build/outputs/apk/release/*.apk
-
-      - name: Refuse to publish an unsigned APK
-        if: env.SIGNED != 'true'
+      - name: Compose release notes
         run: |
-          echo "::error::No signing keystore configured; not publishing a release."
-          exit 1
+          {
+            cat docs/RELEASE_NOTES.md
+            echo
+            if [ "$SIGNED" = "true" ]; then
+              echo "**Signed release build.**"
+            else
+              echo "> **Preview build — signed with the Android *debug* key**, not a production release key. It installs normally, but a later release signed with a different key cannot update over it (uninstall first). Not tested on a physical device by the maintainer at the time of release."
+            fi
+            echo
+            echo "SHA-256 of \`$ASSET\`:"
+            echo '```'
+            cat "$ASSET.sha256"
+            echo '```'
+          } > "$RUNNER_TEMP/notes.md"
 
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp "$APK" "Lumora-${GITHUB_REF_NAME}.apk"
-          gh release create "$GITHUB_REF_NAME" "Lumora-${GITHUB_REF_NAME}.apk" \
+          FLAGS="--prerelease"
+          if [ "$SIGNED" = "true" ] && ! grep -q "early preview" docs/RELEASE_NOTES.md; then FLAGS=""; fi
+          gh release create "$GITHUB_REF_NAME" "$ASSET" "$ASSET.sha256" \
             --title "Lumora ${GITHUB_REF_NAME}" \
-            --notes-file docs/RELEASE_NOTES.md \
-            --prerelease
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            $FLAGS

@@ -1,6 +1,6 @@
 # Permissions
 
-The manifest currently declares **no `<uses-permission>` entries**.
+The manifest declares **no `<uses-permission>` entries**. The built APK contains one permission added automatically by AndroidX (`com.simbuild.lumora.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`, an app-internal permission that protects Lumora's own non-exported receivers on older Android versions); it grants no access to user data.
 
 | Access | Needed for | Notes |
 | --- | --- | --- |
@@ -12,4 +12,4 @@ Explicitly avoided: contacts, SMS, call log, microphone, location, unrestricted 
 
 Apps may hide notification content; Lumora can only show what Android provides to a listener. The manifest `<queries>` entry (launcher apps) only helps show app names; it is not a permission.
 
-_Declared in source; not yet verified against a built APK._
+_Verified with `aapt2 dump badging` on the CI-built debug APK (2026-11-20)._

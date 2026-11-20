@@ -14,4 +14,4 @@ Lumora itself is MIT-licensed (see [LICENSE](LICENSE)). The dependencies current
 
 `rust-core` has no third-party crate dependencies.
 
-This list covers only what exists today. Licenses above for the Android libraries are from the declared dependencies and have **not** been checked against a resolved dependency tree (the app has never been built). Re-check before release; an in-app licenses screen is not implemented yet.
+This list covers only what exists today. Licenses above for the Android libraries are from the declared dependencies and have **not** been checked against a resolved dependency tree. Re-check before release; an in-app licenses screen is not implemented yet.

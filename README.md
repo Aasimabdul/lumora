@@ -2,11 +2,11 @@
 
 A lightweight, open-source Android standby clock with customizable AMOLED themes, photo backgrounds, battery status, and optional privacy-conscious notification previews.
 
-> **Project status: early, not yet built.** The Android app source is written but has **never been compiled**. There is no APK and no release. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for exactly what has and hasn't been verified.
+> **Project status: early preview.** The app compiles and its unit tests and lint pass in CI, but it has **not been tested on a real device**. Only 6 of 40 themes exist. Pre-release APKs on the Releases page are debug-signed. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md).
 
 ## What exists
 
-- **`app/`** (uncompiled) — Compose standby clock with live time/date/battery, Home / Themes / Privacy / Settings screens, DataStore settings, opt-in notification previews via `NotificationListenerService`. **6 of 40 themes** have renderers; the rest show as "Coming soon".
+- **`app/`** — Compose standby clock with live time/date/battery, Home / Themes / Privacy / Settings screens, DataStore settings, opt-in notification previews via `NotificationListenerService`. **6 of 40 themes** have renderers; the rest show as "Coming soon".
 - **`core/`** — Android-free Kotlin: theme catalog (40 ids), time/date formatting, battery mapping, charging-event dedup, settings validation, and the notification-preview state machine with 10/15/20/25/30 s auto-hide. **55 tests pass.**
 - **`rust-core/`** — WCAG contrast maths and theme-config validation. **15 tests pass; rustfmt and clippy clean.** Not yet linked into the app.
 

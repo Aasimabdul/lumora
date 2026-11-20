@@ -18,8 +18,6 @@
 
 Release signing reads these environment variables (never commit keys): `LUMORA_KEYSTORE_PATH`, `LUMORA_KEYSTORE_PASSWORD`, `LUMORA_KEY_ALIAS`, `LUMORA_KEY_PASSWORD`. Without them the release APK is unsigned and not installable.
 
-> The app module has not been compiled yet; the first build may need fixes.
-
 ## Rust core
 
 ```bash

@@ -2,41 +2,38 @@
 
 _Last updated: 2026-11-20. Statuses: PASS, FAIL, BLOCKED, NOT RUN, NOT STARTED._
 
-## Environment (authoring sandbox)
+Repository: https://github.com/Aasimabdul/lumora (branch `main`).
 
-JDK 21, Gradle 8.14.3, Rust 1.97 (rustfmt, clippy). **No Android SDK, NDK, adb or emulator.** Google Maven, Maven Central, Gradle plugin portal, `dl.google.com` and `services.gradle.org` return HTTP 403; `gh` token is invalid. Re-checked after a long pause: unchanged.
-
-## What was actually verified
+## Verified in GitHub Actions (CI run on commit b300484)
 
 | Check | Result |
 | --- | --- |
 | `cargo fmt --check`, `cargo test` (15 tests), `cargo clippy -D warnings` | PASS |
-| Kotlin `core` unit tests via `scripts/verify-core.sh` | PASS — 55 tests |
-| `app/` Kotlin parse check (Kotlin 2.0.21 compiler, no Android classpath) | No syntax errors in 14 files. **This is not a compile**: ~1,000 unresolved-reference errors are expected without the Android/Compose libraries |
-| Manifest / resource XML well-formed | PASS |
-| `./gradlew :core:test` | BLOCKED here (needs AGP + SDK because `:app` is in the build) |
-| Android lint, `assembleDebug`, `assembleRelease` | BLOCKED |
-| Install/launch on device or emulator | NOT RUN |
-| CI and release workflows | NOT RUN |
-| APK | **None exists** |
-| GitHub push / tag / release | BLOCKED (invalid token) — nothing published |
+| `./gradlew :core:test :app:testDebugUnitTest` (core: 55 tests) | PASS |
+| `./gradlew :app:lintDebug` | PASS |
+| `./gradlew :app:assembleDebug` | PASS |
+| APK inspection (`aapt2 dump badging`) | `com.simbuild.lumora`, versionName 0.1.0, versionCode 1, compileSdk 35 |
 
-## Implemented, but UNCOMPILED (written without an Android toolchain; expect first-build fixes)
+The app was first compiled in CI. Fixes needed on the way: `android.useAndroidX` in `gradle.properties`, an API-28 guard for display-cutout mode, and replacing `android-actions/setup-android` (license-acceptance failure) with a direct license step.
 
-- `app/`: Application, DataStore settings repository, `NotificationListenerService`, notification-access helper, `MainActivity` (Home / Themes / Privacy / Settings tabs), `StandbyActivity` (immersive, keep-screen-on while visible, tap for Exit), live clock + battery state, preview card, 6 theme renderers.
-- Manifest declares **no permissions**; listener service is protected by `BIND_NOTIFICATION_LISTENER_SERVICE`.
-- Release signing reads secrets from the environment only.
+## Not verified / not done
+
+| Item | Status |
+| --- | --- |
+| Install and launch on a device or emulator | NOT RUN |
+| Runtime behaviour: standby, notification previews, battery updates | NOT VERIFIED |
+| Compose UI / instrumented tests | NOT STARTED |
+| Signed release build (needs owner's keystore secrets) | NOT DONE |
+| Rust used by the app (JNI/NDK) | NOT STARTED — library is not linked into the app |
+
+## Themes
+
+Catalog: 40. Renderers: **6** (Minimal Digital, Neon Cyan, Flip Clock, Vertical Clock, Analog Classic, Minimal Analog). The other 34 are marked "Coming soon" in the gallery.
 
 ## Not started
 
-34 of 40 theme renderers; photo backgrounds and custom themes; charging automation; onboarding, about and licenses screens; Compose/instrumented tests; DataStore persistence tests; JNI/NDK integration of `rust-core` (the library is **not used by the app**).
+34 themes; photo backgrounds and custom themes; charging automation; onboarding, about and licenses screens; DataStore persistence tests; photo URI recovery.
 
-## Theme count
+## Release
 
-Catalog: 40. Renderers written: **6** (uncompiled). Verified rendering: **0**.
-
-## Next steps
-
-1. Push to GitHub with a valid token; let CI (`ci.yml`) run and fix the first-build errors.
-2. Add release secrets (see `.github/workflows/release.yml`), then tag `v0.1.0` — the tag must equal `versionName`.
-3. Implement the remaining themes and features, then NDK/JNI for Rust.
+See GitHub Releases. A tag `vX.Y.Z` equal to `versionName` triggers `.github/workflows/release.yml`. Without signing secrets it publishes only a debug-signed pre-release.
