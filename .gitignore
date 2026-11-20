@@ -1,0 +1,41 @@
+# Gradle / Kotlin
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.kotlin/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Android build output
+*.apk
+*.aab
+*.ap_
+*.dex
+output-metadata.json
+
+# Signing and secrets
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+*.pem
+*.p12
+.env
+.env.*
+google-services.json
+
+# Rust
+rust-core/target/
+**/*.rs.bk
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.log

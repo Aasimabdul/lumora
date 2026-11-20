@@ -1,0 +1,14 @@
+[package]
+name = "lumora-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "Deterministic theme-configuration validation and contrast maths shared by Lumora."
+license = "MIT"
+publish = false
+
+[dependencies]
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"

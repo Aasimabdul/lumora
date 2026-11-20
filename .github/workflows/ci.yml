@@ -1,0 +1,42 @@
+# NOTE: this workflow has not been executed yet (no GitHub access from the authoring
+# environment). Treat the first run as its verification.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - run: cargo fmt --check
+      - run: cargo test
+      - run: cargo clippy --all-targets --all-features -- -D warnings
+
+  kotlin-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :core:test
+
+  # Add once the Android `app` module exists:
+  #   - install Android SDK components (platform, build-tools)
+  #   - ./gradlew lint assembleDebug
+  #   - upload the debug APK as an artifact
