@@ -37,7 +37,7 @@ jobs:
       # (android-actions/setup-android@v3 failed here on license acceptance in the first run.)
       - name: Accept Android SDK licenses
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       # :app is part of the build, so Gradle needs the Android SDK even for :core:test.
       - name: Unit tests
         run: ./gradlew :core:test :app:testDebugUnitTest
