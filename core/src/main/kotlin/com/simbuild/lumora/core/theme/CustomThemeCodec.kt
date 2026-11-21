@@ -2,6 +2,7 @@ package com.simbuild.lumora.core.theme
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -47,14 +48,41 @@ object CustomThemeCodec {
         val seen = HashSet<String>()
         val result = ArrayList<CustomTheme>()
         for (element in items) {
-            val theme = try {
-                json.decodeFromJsonElement<CustomTheme>(element).sanitized()
-            } catch (_: Exception) {
-                continue
-            }
+            val theme = decodeTolerant(element) ?: continue
             if (seen.add(theme.id)) result += theme
             if (result.size >= CustomThemes.MAX_THEMES) break
         }
         return result
+    }
+
+    /**
+     * Decodes one entry. If a field has the wrong type (for example `"dim": "high"`), only that
+     * field is ignored and its default is used; the rest of the theme is kept.
+     */
+    private fun decodeTolerant(element: JsonElement): CustomTheme? {
+        val obj = element as? JsonObject ?: return null
+        try {
+            return json.decodeFromJsonElement<CustomTheme>(obj).sanitized()
+        } catch (_: Exception) {
+            // fall through to field-by-field recovery
+        }
+        val id = obj["id"] ?: return null
+        val good = LinkedHashMap<String, JsonElement>()
+        good["id"] = id
+        for ((key, value) in obj) {
+            if (key == "id") continue
+            val fieldOk = try {
+                json.decodeFromJsonElement<CustomTheme>(JsonObject(mapOf("id" to id, key to value)))
+                true
+            } catch (_: Exception) {
+                false
+            }
+            if (fieldOk) good[key] = value
+        }
+        return try {
+            json.decodeFromJsonElement<CustomTheme>(JsonObject(good)).sanitized()
+        } catch (_: Exception) {
+            null
+        }
     }
 }
