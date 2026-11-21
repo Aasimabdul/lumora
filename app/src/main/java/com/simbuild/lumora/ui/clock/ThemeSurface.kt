@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
@@ -79,9 +82,10 @@ fun CustomThemeSurface(
 @Composable
 private fun PhotoBackground(theme: CustomTheme, maxEdge: Int, modifier: Modifier) {
     val store = (LocalContext.current.applicationContext as LumoraApp).photoStore
-    val bitmap by produceState<ImageBitmap?>(initialValue = null, theme.photoFile, maxEdge) {
+    var bitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    LaunchedEffect(theme.photoFile, maxEdge) {
         val file = theme.photoFile
-        value = if (file == null) null else store.load(file, maxEdge)?.asImageBitmap()
+        bitmap = if (file == null) null else store.load(file, maxEdge)?.asImageBitmap()
     }
     Box(modifier.clipToBounds().background(Color.Black)) {
         bitmap?.let { image ->
