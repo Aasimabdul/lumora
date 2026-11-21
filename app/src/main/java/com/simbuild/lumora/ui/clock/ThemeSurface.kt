@@ -80,7 +80,8 @@ fun CustomThemeSurface(
 private fun PhotoBackground(theme: CustomTheme, maxEdge: Int, modifier: Modifier) {
     val store = (LocalContext.current.applicationContext as LumoraApp).photoStore
     val bitmap by produceState<ImageBitmap?>(initialValue = null, theme.photoFile, maxEdge) {
-        value = theme.photoFile?.let { store.load(it, maxEdge)?.asImageBitmap() }
+        val file = theme.photoFile
+        value = if (file == null) null else store.load(file, maxEdge)?.asImageBitmap()
     }
     Box(modifier.clipToBounds().background(Color.Black)) {
         bitmap?.let { image ->
