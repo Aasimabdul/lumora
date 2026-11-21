@@ -2,17 +2,22 @@
 
 A lightweight, open-source Android standby clock with customizable AMOLED themes, photo backgrounds, battery status, and optional privacy-conscious notification previews.
 
-> **Project status: early preview.** The app compiles and its unit tests and lint pass in CI, but it has **not been tested on a real device**. Only 6 of 40 themes exist. Pre-release APKs on the Releases page are debug-signed. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md).
+> **Project status: feature-complete preview, not device-tested.** The app compiles and its unit tests and lint pass in CI, but it has **not been run on a real device or emulator**. Pre-release APKs on the Releases page are debug-signed unless the owner has added signing secrets. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md).
 
 ## What exists
 
-- **`app/`** — Compose standby clock with live time/date/battery, Home / Themes / Privacy / Settings screens, DataStore settings, opt-in notification previews via `NotificationListenerService`. **6 of 40 themes** have renderers; the rest show as "Coming soon".
-- **`core/`** — Android-free Kotlin: theme catalog (40 ids), time/date formatting, battery mapping, charging-event dedup, settings validation, and the notification-preview state machine with 10/15/20/25/30 s auto-hide. **55 tests pass.**
-- **`rust-core/`** — WCAG contrast maths and theme-config validation. **15 tests pass; rustfmt and clippy clean.** Not yet linked into the app.
+- **40 themes**, every one with its own renderer (digital, analog, futuristic, nature, creative, templates). No "Coming soon" entries.
+- **Manual clock customization** with a live preview: clock size, date/battery text size, position, font family (default, sans, serif, mono, cursive), weight, text colour (swatches or any `#RRGGBB`), show/hide date and battery.
+- **My themes**: save a look as a named theme with a colour or photo background (zoom, pan, darken, blur on Android 12+). Photos are copied into private app storage (EXIF/GPS removed) and never uploaded. Favourites, search and category filters in the gallery.
+- **Standby clock** with live time/date/battery, optional notification previews (Notification access, off by default, 10/15/20/25/30 s auto-hide, privacy mode, per-app allow-list, memory only).
+- **Charging automation** (off by default): starts standby when a charger is connected **while Lumora is open on screen**; optional exit on unplug. Android does not let apps open themselves from the background, so it cannot start while Lumora is closed.
+- Onboarding, About/licence info, privacy & permissions centre.
+- **`core/`** — Android-free Kotlin: catalog, validated settings, clock look, custom-theme model and JSON codec, moon phase, notification-preview state machine, charging dedup. Unit-tested.
+- **`rust-core/`** — WCAG contrast maths and theme-config validation (15 tests; rustfmt and clippy clean). **Not linked into the app** — Lumora does not use Rust at runtime.
 
-## Not implemented yet
+## Not done
 
-34 themes, photo backgrounds, custom themes, charging automation, Rust integration, Compose/instrumented tests, onboarding and about screens.
+Device/emulator testing, Compose/instrumented UI tests, Rust JNI integration, vibration option, signed release (needs the owner's keystore secrets).
 
 ## Platform note
 

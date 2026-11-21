@@ -1,14 +1,16 @@
-# Lumora v0.1.0 (early preview)
+# Lumora v1.1.0
 
-An early, incomplete preview — not the full 1.0.
+App-level standby clock (does not replace the lock screen or Always-On Display).
 
-**Included**
-- Full-screen standby clock (app-level; does not replace the lock screen or Always-On Display) with live time, date, battery level and charging status.
-- 6 of the planned 40 clock themes: Minimal Digital, Neon Cyan, Flip Clock, Vertical Clock, Analog Classic, Minimal Analog. The other 34 appear in the gallery as "Coming soon" and cannot be selected.
-- Optional notification previews (off by default) through Android's Notification access, with sender/text visibility, privacy mode and 10/15/20/25/30 s auto-hide (default 15 s). Content is kept in memory only.
-- Settings (12/24-hour, date format, date/battery visibility) saved with DataStore.
+**New**
+- All 40 themes now have their own renderer; nothing is "Coming soon".
+- Manual customization with live preview: clock size, date/battery text size, position, font, weight, text colour (swatches or hex), show/hide date and battery.
+- My themes: colour or photo backgrounds (private storage, zoom/pan/darken/blur), favourites, search, category filters.
+- Optional charging automation (off by default, works while Lumora is open), onboarding, About, per-app notification allow-list, clear-preview button, launcher icon.
 
-**Not included yet**
-- 34 themes, photo backgrounds, custom themes, charging automation, Rust integration (the Rust library exists but the app does not use it), UI/instrumented tests, onboarding and about screens.
+**Unchanged**
+- Notification previews are opt-in, memory-only, 10/15/20/25/30 s auto-hide.
 
-**What was verified (GitHub Actions):** Kotlin unit tests, Android lint, debug APK build, and Rust fmt/test/clippy all passed on the tagged commit. **Not verified:** behaviour on a real device or emulator (standby mode, notification previews, battery updates are untested at runtime).
+**Not included:** Rust runtime integration (the Rust library exists but the app does not use it), UI/instrumented tests, vibration option.
+
+**Verification:** Kotlin unit tests, Android lint, debug APK build and Rust fmt/test/clippy are run by GitHub Actions. **Not verified:** behaviour on a real device or emulator, and how each theme looks on screen.

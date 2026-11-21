@@ -1,6 +1,6 @@
 # Lumora — Development Status
 
-_Last updated: 2026-11-20. Statuses: PASS, FAIL, BLOCKED, NOT RUN, NOT STARTED._
+_Last updated: 2026-11-22. Statuses: PASS, FAIL, BLOCKED, NOT RUN, NOT STARTED._
 
 Repository: https://github.com/Aasimabdul/lumora (branch `main`).
 
@@ -12,7 +12,7 @@ Repository: https://github.com/Aasimabdul/lumora (branch `main`).
 | `./gradlew :core:test :app:testDebugUnitTest` (core: 55 tests) | PASS |
 | `./gradlew :app:lintDebug` | PASS |
 | `./gradlew :app:assembleDebug` | PASS |
-| APK inspection (`aapt2 dump badging`) | `com.simbuild.lumora`, versionName 0.1.0, versionCode 1, compileSdk 35 |
+| APK inspection (`aapt2 dump badging`) | `com.simbuild.lumora`, versionName 0.1.0, versionCode 1 (1.1.0 / 2 in current source), compileSdk 35 |
 
 The app was first compiled in CI. Fixes needed on the way: `android.useAndroidX` in `gradle.properties`, an API-28 guard for display-cutout mode, and replacing `android-actions/setup-android` (license-acceptance failure) with a direct license step.
 
@@ -28,11 +28,15 @@ The app was first compiled in CI. Fixes needed on the way: `android.useAndroidX`
 
 ## Themes
 
-Catalog: 40. Renderers: **6** (Minimal Digital, Neon Cyan, Flip Clock, Vertical Clock, Analog Classic, Minimal Analog). The other 34 are marked "Coming soon" in the gallery.
+Catalog: 40. Renderers: **40** (`ThemeRegistryTest` asserts the registry keys equal the catalog ids). The renderers are verified only to compile and to be registered; how each one looks on a real screen is NOT VERIFIED.
+
+## Added in 1.1.0
+
+All 40 themes; manual customization (size, position, font, weight, colour); saved custom themes with colour/photo backgrounds; favourites/search/filters; charging automation (foreground only); onboarding; About; notification app allow-list and clear button; launcher icon.
 
 ## Not started
 
-34 themes; photo backgrounds and custom themes; charging automation; onboarding, about and licenses screens; DataStore persistence tests; photo URI recovery.
+DataStore persistence tests; Compose/instrumented tests; Rust JNI; vibration option.
 
 ## Release
 

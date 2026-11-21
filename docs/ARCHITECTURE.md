@@ -32,4 +32,4 @@ Keeping logic in Android-free modules makes it testable on a plain JVM.
 
 ## Theme catalog vs. rendering
 
-`ThemeCatalog` defines 40 ids/names/categories. `ui/clock/ThemeRenderers.kt` has renderers for 6 (`implementedThemeIds`); the gallery marks the rest "Coming soon" and blocks selecting them. Each remaining theme needs its own distinct composition.
+`ThemeCatalog` defines 40 ids/names/categories. `ui/clock/ThemeRegistry.kt` merges the per-category renderer files (`Themes*.kt`) into `themeRegistry`; a unit test requires one renderer per catalog id. Renderers draw through the shared `Stage` in `ThemeKit.kt`, which applies the user's size/position/font/colour from `ClockFrame`. A saved custom theme (`CustomTheme`, stored as versioned JSON in DataStore) wraps a base renderer with a colour or photo background (`ThemeSurface.kt`); photos live in private storage via `PhotoStore`.

@@ -6,6 +6,8 @@ Lumora itself is MIT-licensed (see [LICENSE](LICENSE)). The dependencies current
 | --- | --- | --- |
 | Kotlin standard library | `core` (runtime) | Apache License 2.0 |
 | kotlinx.coroutines | `core` (runtime) | Apache License 2.0 |
+| kotlinx.serialization (JSON) | `core` (runtime) | Apache License 2.0 |
+| AndroidX ExifInterface | `app` (runtime) | Apache License 2.0 |
 | AndroidX (Core, Activity, Lifecycle, Navigation, DataStore) | `app` (runtime) | Apache License 2.0 |
 | Jetpack Compose (UI, Foundation, Material 3) | `app` (runtime) | Apache License 2.0 |
 | kotlinx.coroutines-android | `app` (runtime) | Apache License 2.0 |
