@@ -4,6 +4,7 @@ import android.app.Application
 import com.simbuild.lumora.core.notifications.CoroutineScheduler
 import com.simbuild.lumora.core.notifications.MonotonicTimeSource
 import com.simbuild.lumora.core.notifications.NotificationPreviewController
+import com.simbuild.lumora.data.PhotoStore
 import com.simbuild.lumora.data.SettingsRepository
 import com.simbuild.lumora.service.NotificationAccess
 import kotlinx.coroutines.CoroutineScope
@@ -17,12 +18,15 @@ class LumoraApp : Application() {
 
     lateinit var settingsRepository: SettingsRepository
         private set
+    lateinit var photoStore: PhotoStore
+        private set
     lateinit var previewController: NotificationPreviewController
         private set
 
     override fun onCreate() {
         super.onCreate()
         settingsRepository = SettingsRepository(this)
+        photoStore = PhotoStore(this)
         previewController = NotificationPreviewController(CoroutineScheduler(appScope), MonotonicTimeSource)
         appScope.launch {
             settingsRepository.settings.collect { previewController.updateSettings(it.preview) }

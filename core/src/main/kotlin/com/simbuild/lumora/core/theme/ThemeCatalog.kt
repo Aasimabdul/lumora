@@ -27,6 +27,9 @@ private fun theme(name: String, category: ThemeCategory) =
 object ThemeCatalog {
     const val DEFAULT_ID = "minimal_digital"
 
+    /** Placeholder faces that only stand in for the user's own photo; they cannot be a custom theme's base face. */
+    val TEMPLATE_IDS: Set<String> = setOf("custom_photo_clock")
+
     val all: List<ThemeDefinition> = listOf(
         // Digital and typography
         theme("Minimal Digital", ThemeCategory.DIGITAL),

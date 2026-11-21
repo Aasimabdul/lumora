@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,18 +22,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.simbuild.lumora.core.settings.AppSettings
+import com.simbuild.lumora.core.theme.CustomTheme
 import com.simbuild.lumora.core.theme.ThemeCatalog
-import com.simbuild.lumora.ui.clock.ThemeRenderers
+import com.simbuild.lumora.ui.clock.ThemeSurface
 import com.simbuild.lumora.ui.clock.rememberClockFrame
 
 @Composable
 fun DashboardScreen(
     settings: AppSettings,
+    customThemes: List<CustomTheme>,
     onStartStandby: () -> Unit,
     onOpenThemes: () -> Unit,
+    onCustomize: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val theme = ThemeCatalog.resolveOrDefault(settings.themeId)
+    val themeName = customThemes.firstOrNull { it.id == settings.themeId }?.name
+        ?: ThemeCatalog.resolveOrDefault(settings.themeId).displayName
     val frame = rememberClockFrame(settings)
     Column(
         modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -40,7 +45,7 @@ fun DashboardScreen(
         Text("Lumora", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
         Text("Your Night. Your Time.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(16.dp))
-        Text("Selected theme: ${theme.displayName}", style = MaterialTheme.typography.titleMedium)
+        Text("Selected theme: $themeName", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
         Box(
             Modifier
@@ -49,12 +54,14 @@ fun DashboardScreen(
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.Black),
         ) {
-            ThemeRenderers.Render(settings.themeId, frame)
+            ThemeSurface(settings.themeId, frame, customThemes, Modifier.fillMaxSize(), photoMaxEdge = 900)
         }
         Spacer(Modifier.height(16.dp))
         Button(onClick = onStartStandby, modifier = Modifier.fillMaxWidth()) { Text("Start standby") }
         Spacer(Modifier.height(8.dp))
         OutlinedButton(onClick = onOpenThemes, modifier = Modifier.fillMaxWidth()) { Text("Change theme") }
+        Spacer(Modifier.height(8.dp))
+        OutlinedButton(onClick = onCustomize, modifier = Modifier.fillMaxWidth()) { Text("Customize clock") }
         Spacer(Modifier.height(16.dp))
         Text(
             "Lumora is an app-level standby clock. It does not replace your lock screen or your phone's Always-On Display.",

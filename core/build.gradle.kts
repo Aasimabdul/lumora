@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     `java-library`
     kotlin("jvm")
+    kotlin("plugin.serialization")
 }
 
 java {
@@ -19,6 +20,7 @@ kotlin {
 dependencies {
     // Exposed in the public API (StateFlow, CoroutineScope), hence `api`.
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     testImplementation("junit:junit:4.13.2")
 }
 

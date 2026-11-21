@@ -23,14 +23,19 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.simbuild.lumora.core.battery.BatteryState
 import com.simbuild.lumora.core.clock.ClockFormatter
 import com.simbuild.lumora.core.clock.FormattedTime
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import com.simbuild.lumora.core.settings.AppSettings
+import com.simbuild.lumora.core.settings.ClockFont
+import com.simbuild.lumora.core.settings.ClockWeight
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
 /** Everything a theme needs to draw one frame. Built from live time and battery data. */
-class ClockFrame(
+data class ClockFrame(
     val zoned: ZonedDateTime,
     val time: FormattedTime,
     val weekday: String,
@@ -38,7 +43,50 @@ class ClockFrame(
     val battery: BatteryState,
     val showDate: Boolean,
     val showBattery: Boolean,
+    /** User clock-size multiplier (applied by [Stage]). */
+    val scale: Float = 1f,
+    /** User multiplier for date / battery text. */
+    val infoScale: Float = 1f,
+    /** -1 left .. 1 right. */
+    val positionX: Float = 0f,
+    /** -1 top .. 1 bottom. */
+    val positionY: Float = 0f,
+    /** User text-colour override; null = each theme uses its own colours. */
+    val tint: Color? = null,
+    val font: FontFamily = FontFamily.Default,
+    /** User weight override; null = each theme uses its own weight. */
+    val weightOverride: FontWeight? = null,
+    /** True when drawn over a user photo: themes must not paint their own background. */
+    val overlay: Boolean = false,
 )
+
+/** Main text/ink colour: the user's override if set, otherwise the theme's [default]. */
+fun ClockFrame.ink(default: Color): Color = tint ?: default
+
+/** Accent colour: the user's override if set, otherwise the theme's [default]. */
+fun ClockFrame.accent(default: Color): Color = tint ?: default
+
+/** Font weight: the user's override if set, otherwise the theme's [default]. */
+fun ClockFrame.weight(default: FontWeight): FontWeight = weightOverride ?: default
+
+internal fun parseHex(hex: String?): Color? =
+    hex?.takeIf { it.length == 7 && it[0] == '#' }?.drop(1)?.toLongOrNull(16)?.let { Color(0xFF000000L or it) }
+
+internal fun ClockFont.toFamily(): FontFamily = when (this) {
+    ClockFont.DEFAULT -> FontFamily.Default
+    ClockFont.SANS -> FontFamily.SansSerif
+    ClockFont.SERIF -> FontFamily.Serif
+    ClockFont.MONO -> FontFamily.Monospace
+    ClockFont.CURSIVE -> FontFamily.Cursive
+}
+
+internal fun ClockWeight.toWeight(): FontWeight? = when (this) {
+    ClockWeight.THEME -> null
+    ClockWeight.LIGHT -> FontWeight.Light
+    ClockWeight.NORMAL -> FontWeight.Normal
+    ClockWeight.BOLD -> FontWeight.Bold
+    ClockWeight.BLACK -> FontWeight.Black
+}
 
 /** Current instant, refreshed on every minute boundary and on time / zone / locale changes. */
 @Composable
@@ -114,7 +162,7 @@ fun rememberClockFrame(settings: AppSettings): ClockFrame {
     val now by rememberNow()
     val battery by rememberBattery()
     val locale = LocalConfiguration.current.locales[0]
-    return remember(now, battery, locale, settings.use24Hour, settings.dateStyle, settings.showDate, settings.showBattery) {
+    return remember(now, battery, locale, settings) {
         val zone = ZoneId.systemDefault()
         ClockFrame(
             zoned = now.atZone(zone),
@@ -124,6 +172,13 @@ fun rememberClockFrame(settings: AppSettings): ClockFrame {
             battery = battery,
             showDate = settings.showDate,
             showBattery = settings.showBattery,
+            scale = settings.clockScale,
+            infoScale = settings.infoScale,
+            positionX = settings.positionX,
+            positionY = settings.positionY,
+            tint = parseHex(settings.textColor),
+            font = settings.font.toFamily(),
+            weightOverride = settings.weight.toWeight(),
         )
     }
 }

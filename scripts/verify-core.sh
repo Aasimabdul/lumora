@@ -26,9 +26,14 @@ done
 kotlinc() { java -cp "$COMPILER_CP" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -no-stdlib -no-reflect -nowarn "$@"; }
 
 echo "== compile main =="
-kotlinc -cp "$STDLIB:$COROUTINES" -d "$OUT/main" $(find "$ROOT/core/src/main" -name '*.kt')
+# The serialization compiler plugin comes from Maven, so offline we compile against a stub of the
+# @Serializable annotation and skip the JSON codec (and its tests); CI compiles and tests those.
+mkdir -p "$OUT/stub"
+printf 'package kotlinx.serialization\nannotation class Serializable\n' > "$OUT/stub/Serializable.kt"
+skip() { grep -L 'kotlinx.serialization.json\|CustomThemeCodec' $(find "$1" -name '*.kt'); }
+kotlinc -cp "$STDLIB:$COROUTINES" -d "$OUT/main" "$OUT/stub/Serializable.kt" $(skip "$ROOT/core/src/main")
 echo "== compile tests =="
-kotlinc -cp "$STDLIB:$COROUTINES:$JUNIT:$OUT/main" -d "$OUT/test" $(find "$ROOT/core/src/test" -name '*.kt')
+kotlinc -cp "$STDLIB:$COROUTINES:$JUNIT:$OUT/main" -d "$OUT/test" $(skip "$ROOT/core/src/test")
 
 echo "== run tests =="
 CLASSES="$(cd "$OUT/test" && find . -name '*Test.class' | sed 's#^\./##; s#\.class$##; s#/#.#g' | sort)"

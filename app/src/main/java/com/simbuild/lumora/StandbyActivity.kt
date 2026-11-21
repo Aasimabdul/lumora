@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,8 +28,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.simbuild.lumora.core.settings.AppSettings
+import com.simbuild.lumora.core.settings.ChargingEndBehavior
+import com.simbuild.lumora.core.theme.CustomTheme
+import kotlinx.coroutines.flow.Flow
 import com.simbuild.lumora.ui.NotificationPreviewCard
-import com.simbuild.lumora.ui.clock.ThemeRenderers
+import com.simbuild.lumora.ui.clock.ThemeSurface
+import com.simbuild.lumora.ui.clock.rememberBattery
 import com.simbuild.lumora.ui.clock.rememberClockFrame
 import kotlinx.coroutines.delay
 
@@ -87,9 +92,27 @@ class StandbyActivity : ComponentActivity() {
 
     @Composable
     private fun StandbyScreen(onExit: () -> Unit) {
-        val settings by app.settingsRepository.settings
-            .collectAsStateWithLifecycle(initialValue = AppSettings())
+        val settingsFlow: Flow<AppSettings?> = app.settingsRepository.settings
+        val loaded by settingsFlow.collectAsStateWithLifecycle(initialValue = null)
+        val customThemes by app.settingsRepository.customThemes
+            .collectAsStateWithLifecycle(initialValue = emptyList<CustomTheme>())
         val preview by app.previewController.state.collectAsStateWithLifecycle()
+        val settings = loaded
+        if (settings == null) {
+            // Wait for the stored settings so the wrong theme is never flashed on a dark room's screen.
+            Box(Modifier.fillMaxSize().background(Color.Black))
+            return
+        }
+        StandbyContent(settings, customThemes, preview, onExit)
+    }
+
+    @Composable
+    private fun StandbyContent(
+        settings: AppSettings,
+        customThemes: List<CustomTheme>,
+        preview: com.simbuild.lumora.core.notifications.PreviewState,
+        onExit: () -> Unit,
+    ) {
         val frame = rememberClockFrame(settings)
         var showExit by remember { mutableStateOf(false) }
 
@@ -101,13 +124,26 @@ class StandbyActivity : ComponentActivity() {
             }
         }
 
+        // Optional charging automation: leave standby when the charger is unplugged.
+        val battery by rememberBattery()
+        val latestSettings by rememberUpdatedState(settings)
+        var wasPluggedIn by remember { mutableStateOf<Boolean?>(null) }
+        LaunchedEffect(battery.isPluggedIn) {
+            val before = wasPluggedIn
+            wasPluggedIn = battery.isPluggedIn
+            val s = latestSettings
+            if (before == true && !battery.isPluggedIn && s.chargingAutomation && s.chargingEnd == ChargingEndBehavior.EXIT) {
+                onExit()
+            }
+        }
+
         Box(
             Modifier
                 .fillMaxSize()
                 .background(Color.Black)
                 .clickable { showExit = !showExit },
         ) {
-            ThemeRenderers.Render(settings.themeId, frame, Modifier.fillMaxSize())
+            ThemeSurface(settings.themeId, frame, customThemes, Modifier.fillMaxSize())
             NotificationPreviewCard(
                 state = preview,
                 modifier = Modifier.align(Alignment.TopCenter).padding(16.dp),

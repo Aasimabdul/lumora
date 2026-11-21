@@ -12,8 +12,8 @@ android {
         applicationId = "com.simbuild.lumora"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     // Signing material comes only from the environment (CI secrets); nothing is committed.
@@ -59,6 +59,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
 
     implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.navigation:navigation-compose:2.8.5")

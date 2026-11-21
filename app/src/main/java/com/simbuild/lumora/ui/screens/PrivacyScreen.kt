@@ -1,5 +1,6 @@
 package com.simbuild.lumora.ui.screens
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,13 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,7 +30,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.simbuild.lumora.core.notifications.NotificationDisplayDuration
 import com.simbuild.lumora.core.settings.AppSettings
+import com.simbuild.lumora.LumoraApp
 import com.simbuild.lumora.service.NotificationAccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Permissions & privacy for the one optional feature that needs special access.
@@ -111,6 +118,46 @@ fun PrivacyScreen(
             }
         }
 
+        Text("Which apps can show previews", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 24.dp))
+        Text(
+            if (p.allowedPackages.isEmpty()) "All apps (default)." else "Only ${p.allowedPackages.size} chosen app(s).",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        var choosing by remember { mutableStateOf(false) }
+        Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { choosing = !choosing }, enabled = p.enabled) { Text(if (choosing) "Hide app list" else "Choose apps") }
+            if (p.allowedPackages.isNotEmpty()) {
+                OutlinedButton(onClick = { onChange { copy(preview = preview.copy(allowedPackages = emptySet())) } }) { Text("Allow all apps") }
+            }
+        }
+        if (choosing) {
+            val apps by produceState(initialValue = emptyList<LaunchableApp>()) {
+                value = withContext(Dispatchers.IO) { launchableApps(context) }
+            }
+            Column(Modifier.fillMaxWidth().heightIn(max = 320.dp).verticalScroll(rememberScrollState())) {
+                apps.forEach { app ->
+                    SwitchRow(app.label, app.packageName in p.allowedPackages) { on ->
+                        onChange {
+                            val next = if (on) preview.allowedPackages + app.packageName else preview.allowedPackages - app.packageName
+                            copy(preview = preview.copy(allowedPackages = next))
+                        }
+                    }
+                }
+            }
+        }
+
+        Text("Current preview", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 24.dp))
+        Text(
+            "Previews are held in memory only and disappear on their own. You can also clear the one on screen right now.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        OutlinedButton(
+            onClick = { (context.applicationContext as LumoraApp).previewController.clear() },
+            modifier = Modifier.padding(top = 8.dp),
+        ) { Text("Clear current preview") }
+
         Text("Other access", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 24.dp))
         Text(
             "Lumora requests no other permissions: no photos, contacts, SMS, location, microphone, storage, overlay or accessibility access.",
@@ -118,4 +165,17 @@ fun PrivacyScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+}
+
+private class LaunchableApp(val label: String, val packageName: String)
+
+/** Apps with a launcher icon, which is all the package visibility Lumora declares needs. */
+private fun launchableApps(context: android.content.Context): List<LaunchableApp> {
+    val pm = context.packageManager
+    val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+    return pm.queryIntentActivities(intent, 0)
+        .map { LaunchableApp(it.loadLabel(pm).toString(), it.activityInfo.packageName) }
+        .filter { it.packageName != context.packageName }
+        .distinctBy { it.packageName }
+        .sortedBy { it.label.lowercase() }
 }
