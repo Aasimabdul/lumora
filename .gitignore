@@ -39,3 +39,14 @@ rust-core/target/
 Thumbs.db
 *.swp
 *.log
+
+# More secrets / credentials
+*.pfx
+*.key
+*.p8
+*.gpg
+*.asc
+secrets.*
+service-account*.json
+*credentials*.json
+*.hprof

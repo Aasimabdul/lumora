@@ -5,3 +5,4 @@
 3. Don't weaken tests or suppress warnings to get green.
 4. Never include message content, secrets or signing material in code, logs or commits.
 5. Theme artwork must be original or properly licensed — no copyrighted characters or brand assets.
+6. Security problems go to the private advisory form, not public issues (see [SECURITY.md](SECURITY.md)). Be kind: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
