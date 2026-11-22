@@ -29,7 +29,7 @@ import com.simbuild.lumora.ui.clock.toFamily
 /** Grid of font cards; every card previews a time in its own font so the choice is visible before tapping. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FontPicker(selected: ClockFont, onSelect: (ClockFont) -> Unit, modifier: Modifier = Modifier) {
+fun FontPicker(selected: ClockFont, modifier: Modifier = Modifier, onSelect: (ClockFont) -> Unit) {
     val shape = RoundedCornerShape(12.dp)
     FlowRow(
         modifier = modifier.padding(top = 8.dp),
