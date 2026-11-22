@@ -7,7 +7,7 @@ A lightweight, open-source Android standby clock with customizable AMOLED themes
 ## What exists
 
 - **40 themes**, every one with its own renderer (digital, analog, futuristic, nature, creative, templates). No "Coming soon" entries.
-- **Manual clock customization** with a live preview: clock size, date/battery text size, position, font family (default, sans, serif, mono, cursive), weight, text colour (swatches or any `#RRGGBB`), show/hide date and battery.
+- **Manual clock customization** with a live preview: clock size, date/battery text size, position, font family (5 system fonts plus 11 bundled display fonts, previewed in a picker also available under Settings), weight, text colour (swatches or any `#RRGGBB`), show/hide date and battery.
 - **My themes**: save a look as a named theme with a colour or photo background (zoom, pan, darken, blur on Android 12+). Photos are copied into private app storage (EXIF/GPS removed) and never uploaded. Favourites, search and category filters in the gallery.
 - **Standby clock** with live time/date/battery, optional notification previews (Notification access, off by default, 10/15/20/25/30 s auto-hide, privacy mode, per-app allow-list, memory only).
 - **Charging automation** (off by default): starts standby when a charger is connected **while Lumora is open on screen**; optional exit on unplug. Android does not let apps open themselves from the background, so it cannot start while Lumora is closed.

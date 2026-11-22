@@ -24,9 +24,11 @@ import com.simbuild.lumora.core.battery.BatteryState
 import com.simbuild.lumora.core.clock.ClockFormatter
 import com.simbuild.lumora.core.clock.FormattedTime
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.simbuild.lumora.core.settings.AppSettings
+import com.simbuild.lumora.R
 import com.simbuild.lumora.core.settings.ClockFont
 import com.simbuild.lumora.core.settings.ClockWeight
 import kotlinx.coroutines.delay
@@ -78,7 +80,20 @@ internal fun ClockFont.toFamily(): FontFamily = when (this) {
     ClockFont.SERIF -> FontFamily.Serif
     ClockFont.MONO -> FontFamily.Monospace
     ClockFont.CURSIVE -> FontFamily.Cursive
+    ClockFont.AUDIOWIDE -> bundled(R.font.audiowide)
+    ClockFont.MICHROMA -> bundled(R.font.michroma)
+    ClockFont.BEBAS -> bundled(R.font.bebas_neue)
+    ClockFont.RIGHTEOUS -> bundled(R.font.righteous)
+    ClockFont.ANTON -> bundled(R.font.anton)
+    ClockFont.POIRET -> bundled(R.font.poiret_one)
+    ClockFont.PACIFICO -> bundled(R.font.pacifico)
+    ClockFont.LOBSTER -> bundled(R.font.lobster)
+    ClockFont.TECH_MONO -> bundled(R.font.share_tech_mono)
+    ClockFont.TERMINAL -> bundled(R.font.vt323)
+    ClockFont.PIXEL -> bundled(R.font.press_start_2p)
 }
+
+private fun bundled(@androidx.annotation.FontRes id: Int): FontFamily = FontFamily(Font(id))
 
 internal fun ClockWeight.toWeight(): FontWeight? = when (this) {
     ClockWeight.THEME -> null

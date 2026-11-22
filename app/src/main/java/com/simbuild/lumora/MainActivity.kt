@@ -10,13 +10,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +41,7 @@ import com.simbuild.lumora.core.settings.AppSettings
 import com.simbuild.lumora.core.theme.CustomTheme
 import com.simbuild.lumora.core.theme.CustomThemes
 import com.simbuild.lumora.core.theme.ThemeCatalog
+import com.simbuild.lumora.ui.LumoraTheme
 import com.simbuild.lumora.ui.clock.rememberBattery
 import com.simbuild.lumora.ui.screens.CustomizeScreen
 import com.simbuild.lumora.ui.screens.DashboardScreen
@@ -46,23 +52,12 @@ import com.simbuild.lumora.ui.screens.ThemesScreen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-private val LumoraColors: ColorScheme = darkColorScheme(
-    primary = Color(0xFF00E5FF),
-    onPrimary = Color.Black,
-    background = Color.Black,
-    onBackground = Color.White,
-    surface = Color(0xFF0D1B2A),
-    onSurface = Color.White,
-    surfaceVariant = Color(0xFF13263A),
-    onSurfaceVariant = Color(0xFFB8C7D6),
-)
-
-private enum class Tab(val label: String) {
-    HOME("Home"),
-    THEMES("Themes"),
-    CUSTOMIZE("Customize"),
-    PRIVACY("Privacy"),
-    SETTINGS("Settings"),
+private enum class Tab(val label: String, val icon: ImageVector) {
+    HOME("Home", Icons.Filled.Home),
+    THEMES("Themes", Icons.Filled.Star),
+    CUSTOMIZE("Customize", Icons.Filled.Edit),
+    PRIVACY("Privacy", Icons.Filled.Lock),
+    SETTINGS("Settings", Icons.Filled.Settings),
 }
 
 class MainActivity : ComponentActivity() {
@@ -70,7 +65,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme(colorScheme = LumoraColors) { LumoraRoot() } }
+        setContent { LumoraTheme { LumoraRoot() } }
     }
 
     override fun onResume() {
@@ -141,7 +136,7 @@ class MainActivity : ComponentActivity() {
                         NavigationBarItem(
                             selected = tab == it,
                             onClick = { tab = it },
-                            icon = {},
+                            icon = { Icon(it.icon, contentDescription = null) },
                             label = { Text(it.label, maxLines = 1) },
                             alwaysShowLabel = true,
                         )

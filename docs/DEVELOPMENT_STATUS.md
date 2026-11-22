@@ -30,6 +30,10 @@ The app was first compiled in CI. Fixes needed on the way: `android.useAndroidX`
 
 Catalog: 40. Renderers: **40** (`ThemeRegistryTest` asserts the registry keys equal the catalog ids). The renderers are verified only to compile and to be registered; how each one looks on a real screen is NOT VERIFIED.
 
+## Added in 1.2.0
+
+11 bundled fancy fonts (Open Font License) with a font picker in Customize and Settings; refreshed UI (display typeface, tab icons, redesigned Home and Settings with grouped cards). Visual result NOT VERIFIED on a device.
+
 ## Added in 1.1.0
 
 All 40 themes; manual customization (size, position, font, weight, colour); saved custom themes with colour/photo backgrounds; favourites/search/filters; charging automation (foreground only); onboarding; About; notification app allow-list and clear button; launcher icon.

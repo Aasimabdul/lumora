@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.simbuild.lumora.core.clock.DateStyle
 import com.simbuild.lumora.core.settings.AppSettings
 import com.simbuild.lumora.core.settings.ChargingEndBehavior
+import com.simbuild.lumora.ui.SectionCard
 
 @Composable
 fun SettingsScreen(
@@ -37,39 +38,51 @@ fun SettingsScreen(
 ) {
     Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp)) {
         Text("Settings", style = MaterialTheme.typography.headlineMedium)
-        SwitchRow("24-hour time", settings.use24Hour) { onChange { copy(use24Hour = it) } }
-        SwitchRow("Show date", settings.showDate) { onChange { copy(showDate = it) } }
-        SwitchRow("Show battery", settings.showBattery) { onChange { copy(showBattery = it) } }
 
-        Text("Date format", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            DateStyle.entries.forEach { style ->
-                FilterChip(
-                    selected = settings.dateStyle == style,
-                    onClick = { onChange { copy(dateStyle = style) } },
-                    label = { Text(style.name.lowercase().replaceFirstChar { it.uppercase() }) },
-                )
+        SectionCard("Clock") {
+            SwitchRow("24-hour time", settings.use24Hour) { onChange { copy(use24Hour = it) } }
+            SwitchRow("Show date", settings.showDate) { onChange { copy(showDate = it) } }
+            SwitchRow("Show battery", settings.showBattery) { onChange { copy(showBattery = it) } }
+            Text("Date format", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                DateStyle.entries.forEach { style ->
+                    FilterChip(
+                        selected = settings.dateStyle == style,
+                        onClick = { onChange { copy(dateStyle = style) } },
+                        label = { Text(style.name.lowercase().replaceFirstChar { it.uppercase() }) },
+                    )
+                }
             }
         }
 
-        Text("Charging automation", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 24.dp))
-        SwitchRow("Start standby when charging begins", settings.chargingAutomation) { onChange { copy(chargingAutomation = it) } }
-        Text(
-            "Off by default. This works while Lumora is open on screen: plug in your charger and the standby clock opens. " +
-                "Android does not let apps open themselves from the background, so Lumora cannot start on its own when it is closed, " +
-                "and a phone's own settings or battery saver may still interrupt it.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        if (settings.chargingAutomation) {
-            Text("When the charger is unplugged", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp, bottom = 8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ChargingEndBehavior.entries.forEach { b ->
-                    FilterChip(
-                        selected = settings.chargingEnd == b,
-                        onClick = { onChange { copy(chargingEnd = b) } },
-                        label = { Text(b.label) },
-                    )
+        SectionCard("Clock font") {
+            Text(
+                "Applies to every built-in theme. Size, weight and colour are in the Customize tab, and your own saved themes keep their own font.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            FontPicker(settings.font) { f -> onChange { copy(font = f) } }
+        }
+
+        SectionCard("Charging automation") {
+            SwitchRow("Start standby when charging begins", settings.chargingAutomation) { onChange { copy(chargingAutomation = it) } }
+            Text(
+                "Off by default. This works while Lumora is open on screen: plug in your charger and the standby clock opens. " +
+                    "Android does not let apps open themselves from the background, so Lumora cannot start on its own when it is closed, " +
+                    "and a phone's own settings or battery saver may still interrupt it.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (settings.chargingAutomation) {
+                Text("When the charger is unplugged", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp, bottom = 8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ChargingEndBehavior.entries.forEach { b ->
+                        FilterChip(
+                            selected = settings.chargingEnd == b,
+                            onClick = { onChange { copy(chargingEnd = b) } },
+                            label = { Text(b.label) },
+                        )
+                    }
                 }
             }
         }
@@ -90,25 +103,26 @@ private fun AboutSection(onShowIntro: () -> Unit) {
             "unknown"
         }
     }
-    Text("About Lumora", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 24.dp))
-    Text("Version $version", style = MaterialTheme.typography.bodyMedium)
-    Text(
-        "Lumora is an app-level standby clock. It does not replace your lock screen or your phone's Always-On Display. " +
-            "It is open source under the MIT License. It uses Kotlin, Jetpack Compose and AndroidX (Apache License 2.0); " +
-            "the full list is in THIRD_PARTY_NOTICES.md in the repository.",
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 4.dp),
-    )
-    Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedButton(onClick = {
-            try {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(REPO_URL)))
-            } catch (_: ActivityNotFoundException) {
-                Toast.makeText(context, "No app can open links on this device.", Toast.LENGTH_SHORT).show()
-            }
-        }) { Text("Source code") }
-        OutlinedButton(onClick = onShowIntro) { Text("Show introduction") }
+    SectionCard("About Lumora") {
+        Text("Version $version", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
+        Text(
+            "Lumora is an app-level standby clock. It does not replace your lock screen or your phone's Always-On Display. " +
+                "It is open source under the MIT License. It uses Kotlin, Jetpack Compose and AndroidX (Apache License 2.0) and " +
+                "bundled fonts under the SIL Open Font License; the full list is in THIRD_PARTY_NOTICES.md in the repository.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp),
+        )
+        Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = {
+                try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(REPO_URL)))
+                } catch (_: ActivityNotFoundException) {
+                    Toast.makeText(context, "No app can open links on this device.", Toast.LENGTH_SHORT).show()
+                }
+            }) { Text("Source code") }
+            OutlinedButton(onClick = onShowIntro) { Text("Show introduction") }
+        }
     }
 }
 

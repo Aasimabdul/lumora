@@ -347,15 +347,7 @@ private fun LookControls(look: ClockLook, onLook: (ClockLook) -> Unit) {
     }
 
     SectionTitle("Font")
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        ClockFont.entries.forEach { f ->
-            FilterChip(
-                selected = look.font == f,
-                onClick = { onLook(look.copy(font = f)) },
-                label = { Text(f.label, fontFamily = f.toFamily()) },
-            )
-        }
-    }
+    FontPicker(look.font) { onLook(look.copy(font = it)) }
 
     SectionTitle("Weight")
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -1,3 +1,14 @@
+# Lumora v1.2.0
+
+**New in 1.2.0**
+- 11 bundled fancy fonts (Audiowide, Michroma, Bebas Neue, Righteous, Anton, Poiret One, Pacifico, Lobster, Share Tech Mono, VT323, Press Start 2P; SIL OFL) on top of the 5 system fonts.
+- Font picker that previews the time in every font, in both Customize and a new Settings > Clock font section.
+- UI refresh: display typeface for titles, navigation icons, redesigned Home screen and grouped Settings cards.
+
+Everything from 1.1.0 below still applies. Not device-tested.
+
+---
+
 # Lumora v1.1.0
 
 App-level standby clock (does not replace the lock screen or Always-On Display).

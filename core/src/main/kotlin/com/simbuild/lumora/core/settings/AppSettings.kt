@@ -12,6 +12,19 @@ enum class ClockFont(val label: String) {
     SERIF("Serif"),
     MONO("Monospace"),
     CURSIVE("Cursive"),
+
+    // Bundled fonts (SIL Open Font License, see THIRD_PARTY_NOTICES.md). Stored by enum name, so never rename.
+    AUDIOWIDE("Audiowide"),
+    MICHROMA("Michroma"),
+    BEBAS("Bebas Neue"),
+    RIGHTEOUS("Righteous"),
+    ANTON("Anton"),
+    POIRET("Poiret One"),
+    PACIFICO("Pacifico"),
+    LOBSTER("Lobster"),
+    TECH_MONO("Share Tech Mono"),
+    TERMINAL("VT323"),
+    PIXEL("Press Start 2P"),
 }
 
 /** [THEME] keeps whatever weight the selected theme was designed with. */

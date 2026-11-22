@@ -12,6 +12,7 @@ Lumora itself is MIT-licensed (see [LICENSE](LICENSE)). The dependencies current
 | Jetpack Compose (UI, Foundation, Material 3) | `app` (runtime) | Apache License 2.0 |
 | kotlinx.coroutines-android | `app` (runtime) | Apache License 2.0 |
 | JUnit 4 | `core` (tests only, not shipped) | Eclipse Public License 1.0 |
+| Fonts: Audiowide, Michroma, Bebas Neue, Righteous, Anton, Poiret One, Pacifico, Lobster, Share Tech Mono, VT323, Press Start 2P | `app` (bundled in `res/font`) | SIL Open Font License 1.1 (licence texts in `third_party/fonts/`) |
 | Rust standard library | `rust-core` | MIT OR Apache-2.0 |
 
 `rust-core` has no third-party crate dependencies.

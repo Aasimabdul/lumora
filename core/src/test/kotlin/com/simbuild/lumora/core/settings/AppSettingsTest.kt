@@ -61,6 +61,14 @@ class AppSettingsTest {
     }
 
     @Test
+    fun everyFontNameRoundTripsThroughStoredValue() {
+        ClockFont.entries.forEach { f ->
+            assertEquals(f, AppSettings.fromRaw(RawSettings(font = f.name)).font)
+        }
+        assertEquals(16, ClockFont.entries.size)
+    }
+
+    @Test
     fun corruptedValuesFallBackToSafeDefaults() {
         val s = AppSettings.fromRaw(
             RawSettings(
