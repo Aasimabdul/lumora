@@ -1,3 +1,11 @@
+# Lumora v1.2.3
+
+The standard build now contains **no notification-listener code at all** (class, manifest entry and settings access live only in the notifications flavor). In 1.2.2 the class was still compiled into the standard APK. CI now fails if the standard release APK references `NotificationListenerService`.
+
+Play Protect may still show a prompt for a new, unknown, debug-signed app. Not tested on a device.
+
+---
+
 # Lumora v1.2.2
 
 Same as 1.2.1 (Play Protect fix, two APKs, new icon). Re-released because the 1.2.1 tag pointed at an older commit.

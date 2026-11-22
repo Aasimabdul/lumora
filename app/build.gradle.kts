@@ -12,8 +12,8 @@ android {
         applicationId = "com.simbuild.lumora"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.2.2"
+        versionCode = 6
+        versionName = "1.2.3"
     }
 
     // "standard" has no notification listener, so Google Play Protect does not block it when it is

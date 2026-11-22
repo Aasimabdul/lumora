@@ -58,6 +58,13 @@ jobs:
         run: ./gradlew :app:assembleStandardDebug :app:assembleNotificationsDebug
       - name: Build release variants (unsigned; checks R8 shrinking compiles)
         run: ./gradlew :app:assembleStandardRelease :app:assembleNotificationsRelease
+      - name: Standard release APK must contain no notification-listener code
+        run: |
+          APK=$(ls app/build/outputs/apk/standard/release/*.apk | head -n1)
+          mkdir -p "$RUNNER_TEMP/std" && unzip -oq "$APK" 'classes*.dex' -d "$RUNNER_TEMP/std"
+          if grep -al "NotificationListenerService\|LumoraNotificationListener" "$RUNNER_TEMP"/std/classes*.dex; then
+            echo "standard build still references notification listener code"; exit 1
+          fi
       - name: Inspect APKs
         run: |
           AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | tail -n1)
