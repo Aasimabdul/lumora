@@ -1,21 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Crescent moon -->
-    <path
-        android:fillColor="#00E5FF"
-        android:pathData="M68,26 A28,28 0 0,0 68,82 A40,40 0 0,1 68,26 Z" />
-    <!-- Three small stars -->
-    <path
-        android:fillColor="#00E5FF"
-        android:pathData="M78,36 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" />
-    <path
-        android:fillColor="#00E5FF"
-        android:pathData="M72,54 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
-    <path
-        android:fillColor="#00E5FF"
-        android:pathData="M78,70 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="1.15"
+        android:scaleY="1.15">
+        <!-- Crescent moon -->
+        <path android:pathData="M51.13,28.16 A26,26 0 1,0 78.58,62.47 A22,22 0 0,1 51.13,28.16 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:startX="28"
+                    android:startY="28"
+                    android:endX="80"
+                    android:endY="80"
+                    android:type="linear">
+                    <item android:color="#7DF3FF" android:offset="0" />
+                    <item android:color="#00B8D9" android:offset="1" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <!-- Clock hands resting in the moon's bite -->
+        <path
+            android:pathData="M64,46 L64,33"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeWidth="3" />
+        <path
+            android:pathData="M64,46 L73,52"
+            android:strokeColor="#00E5FF"
+            android:strokeLineCap="round"
+            android:strokeWidth="3" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M64,43.6 a2.4,2.4 0 1,0 0.01,0 Z" />
+    </group>
 </vector>

@@ -30,6 +30,10 @@ The app was first compiled in CI. Fixes needed on the way: `android.useAndroidX`
 
 Catalog: 40. Renderers: **40** (`ThemeRegistryTest` asserts the registry keys equal the catalog ids). The renderers are verified only to compile and to be registered; how each one looks on a real screen is NOT VERIFIED.
 
+## Added in 1.2.1
+
+Two build flavors (`standard` without the notification listener, `notifications` with it) to avoid Google Play Protect's install block; new adaptive launcher icon (moon + clock hands, with monochrome layer); brand assets in `docs/assets/`; install guide and keystore helper script. Not verified on a device.
+
 ## Added in 1.2.0
 
 11 bundled fancy fonts (Open Font License) with a font picker in Customize and Settings; refreshed UI (display typeface, tab icons, redesigned Home and Settings with grouped cards). Visual result NOT VERIFIED on a device.

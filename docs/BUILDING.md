@@ -10,10 +10,14 @@
 ## Android app
 
 ```bash
-./gradlew :core:test :app:testDebugUnitTest
-./gradlew :app:lintDebug
-./gradlew :app:assembleDebug      # app/build/outputs/apk/debug/
-./gradlew :app:assembleRelease    # signed only if signing env vars are set
+./gradlew :core:test :app:testStandardDebugUnitTest :app:testNotificationsDebugUnitTest
+./gradlew :app:lintStandardDebug :app:lintNotificationsDebug
+./gradlew :app:assembleStandardDebug         # app/build/outputs/apk/standard/debug/
+./gradlew :app:assembleNotificationsDebug    # app/build/outputs/apk/notifications/debug/
+./gradlew :app:assembleStandardRelease :app:assembleNotificationsRelease   # signed only if signing env vars are set
+
+# Two flavors: "standard" (no notification previews, installable past Play Protect) and
+# "notifications" (adds the notification listener). See docs/INSTALL.md.
 ```
 
 Release signing reads these environment variables (never commit keys): `LUMORA_KEYSTORE_PATH`, `LUMORA_KEYSTORE_PASSWORD`, `LUMORA_KEY_ALIAS`, `LUMORA_KEY_PASSWORD`. Without them the release APK is unsigned and not installable.
