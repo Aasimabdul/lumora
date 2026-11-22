@@ -1,3 +1,4 @@
+# Added from GitHub's Rust template; pointed at rust-core/ (the repository root has no Cargo.toml).
 name: Rust
 
 on:
@@ -6,14 +7,18 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: rust-core
     steps:
     - uses: actions/checkout@v4
     - name: Build
