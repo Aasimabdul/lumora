@@ -41,6 +41,6 @@ gh auth login
 bash scripts/make-keystore.sh
 ```
 
-The script creates the keystore on your device and stores `LUMORA_KEYSTORE_B64`, `LUMORA_KEYSTORE_PASSWORD`, `LUMORA_KEY_ALIAS` and `LUMORA_KEY_PASSWORD` as GitHub repository secrets. Back up the keystore file; losing it means future updates cannot install over existing installs.
+The script creates the keystore on your device and stores `LUMORA_KEYSTORE_B64`, `LUMORA_KEYSTORE_PASSWORD`, `LUMORA_KEY_ALIAS` and `LUMORA_KEY_PASSWORD` as GitHub repository secrets. You can then publish a release without a computer: GitHub → Actions → **Release** → *Run workflow* (branch `main`). It builds the `versionName` in `app/build.gradle.kts`, creates the tag `v<versionName>` on that commit and publishes the release. Back up the keystore file; losing it means future updates cannot install over existing installs.
 
 If Play Protect still blocks a build that follows Google's guidance, the app developer can file a Play Protect appeal: <https://support.google.com/googleplay/android-developer/contact/protectappeals>. No signing or flavor choice can guarantee Play Protect will not warn about a new, unknown app.

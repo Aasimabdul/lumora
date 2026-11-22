@@ -15,6 +15,9 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  # Manual run from the Actions tab (branch main): builds the version in app/build.gradle.kts and
+  # creates the tag v<versionName> on this commit together with the release. Fails if the tag exists.
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -36,9 +39,22 @@ jobs:
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Resolve tag
+        run: |
+          VERSION=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            TAG_NAME="$GITHUB_REF_NAME"
+          else
+            TAG_NAME="v$VERSION"
+            if git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" > /dev/null 2>&1; then
+              echo "Tag $TAG_NAME already exists. Bump versionName first."; exit 1
+            fi
+          fi
+          echo "TAG_NAME=$TAG_NAME" >> "$GITHUB_ENV"
+
       - name: Tag must match versionName
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
+          TAG="${TAG_NAME#v}"
           VERSION=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
           echo "tag=$TAG versionName=$VERSION"
           test "$TAG" = "$VERSION"
@@ -83,10 +99,10 @@ jobs:
               if "$BT/aapt2" dump xmltree --file AndroidManifest.xml "$APK" | grep -q BIND_NOTIFICATION_LISTENER_SERVICE; then
                 echo "standard APK must not declare the notification listener"; exit 1
               fi
-              cp "$APK" "dist/Lumora-${GITHUB_REF_NAME}${SUFFIX}.apk"
+              cp "$APK" "dist/Lumora-${TAG_NAME}${SUFFIX}.apk"
             else
               "$BT/aapt2" dump xmltree --file AndroidManifest.xml "$APK" | grep -q BIND_NOTIFICATION_LISTENER_SERVICE
-              cp "$APK" "dist/Lumora-${GITHUB_REF_NAME}-notifications${SUFFIX}.apk"
+              cp "$APK" "dist/Lumora-${TAG_NAME}-notifications${SUFFIX}.apk"
             fi
           done
           (cd dist && sha256sum *.apk | tee SHA256SUMS.txt)
@@ -114,7 +130,8 @@ jobs:
         run: |
           FLAGS="--prerelease"
           if [ "$SIGNED" = "true" ] && ! grep -q "early preview" docs/RELEASE_NOTES.md; then FLAGS=""; fi
-          gh release create "$GITHUB_REF_NAME" dist/*.apk dist/SHA256SUMS.txt \
-            --title "Lumora ${GITHUB_REF_NAME}" \
+          gh release create "$TAG_NAME" dist/*.apk dist/SHA256SUMS.txt \
+            --target "$GITHUB_SHA" \
+            --title "Lumora ${TAG_NAME}" \
             --notes-file "$RUNNER_TEMP/notes.md" \
             $FLAGS

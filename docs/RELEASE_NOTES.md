@@ -1,9 +1,15 @@
+# Lumora v1.2.2
+
+Same as 1.2.1 (Play Protect fix, two APKs, new icon). Re-released because the 1.2.1 tag pointed at an older commit.
+
+---
+
 # Lumora v1.2.1
 
 **Play Protect fix.** Google Play Protect blocks sideloaded apps that declare a notification listener, so Lumora is now built in two variants:
 
-- `Lumora-v1.2.1.apk` — **standard**: everything except notification previews. Does not declare a notification listener.
-- `Lumora-v1.2.1-notifications.apk` — adds optional notification previews. Install with `adb` (see [docs/INSTALL.md](docs/INSTALL.md)).
+- `Lumora-v1.2.2.apk` — **standard**: everything except notification previews. Does not declare a notification listener.
+- `Lumora-v1.2.2-notifications.apk` — adds optional notification previews. Install with `adb` (see [docs/INSTALL.md](docs/INSTALL.md)).
 
 This is not a guarantee: Play Protect may still show an unknown-app prompt for a new app. Not tested on a device.
 

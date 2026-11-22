@@ -56,6 +56,8 @@ jobs:
           if-no-files-found: ignore
       - name: Build debug APKs
         run: ./gradlew :app:assembleStandardDebug :app:assembleNotificationsDebug
+      - name: Build release variants (unsigned; checks R8 shrinking compiles)
+        run: ./gradlew :app:assembleStandardRelease :app:assembleNotificationsRelease
       - name: Inspect APKs
         run: |
           AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | tail -n1)
