@@ -4,7 +4,7 @@ The manifest declares **no `<uses-permission>` entries**. The built APK contains
 
 | Access | Needed for | Notes |
 | --- | --- | --- |
-| Notification Listener access | Optional notification previews | A special access the user grants in Android settings, separate from runtime permissions. Off by default. The service is declared with `BIND_NOTIFICATION_LISTENER_SERVICE`. Revoke in Android Settings → Notifications → Notification access. |
+| Notification Listener access | Optional notification previews | A special access the user grants in Android settings, separate from runtime permissions. Off by default. The service (`BIND_NOTIFICATION_LISTENER_SERVICE`) is declared only in the `notifications` build flavor; the `standard` build does not declare it, which keeps it installable past Google Play Protect (see [INSTALL.md](INSTALL.md)). Revoke in Android Settings → Notifications → Notification access. |
 | `POST_NOTIFICATIONS` (Android 13+) | Lumora's *own* notifications | Not requested; Lumora posts none. It would **not** grant access to other apps' notifications. |
 | Photo access | Custom photo backgrounds | System photo picker (`PickVisualMedia`); no storage permission. The chosen image is copied to private app storage. |
 

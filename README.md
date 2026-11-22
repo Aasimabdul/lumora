@@ -15,6 +15,10 @@ A lightweight, open-source Android standby clock with customizable AMOLED themes
 - **`core/`** — Android-free Kotlin: catalog, validated settings, clock look, custom-theme model and JSON codec, moon phase, notification-preview state machine, charging dedup. Unit-tested.
 - **`rust-core/`** — WCAG contrast maths and theme-config validation (15 tests; rustfmt and clippy clean). **Not linked into the app** — Lumora does not use Rust at runtime.
 
+## Installing
+
+See [docs/INSTALL.md](docs/INSTALL.md): which APK to pick, Google Play Protect, and notification access.
+
 ## Not done
 
 Device/emulator testing, Compose/instrumented UI tests, Rust JNI integration, vibration option, signed release (needs the owner's keystore secrets).

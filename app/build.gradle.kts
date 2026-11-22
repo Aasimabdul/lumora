@@ -12,8 +12,16 @@ android {
         applicationId = "com.simbuild.lumora"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.2.0"
+        versionCode = 4
+        versionName = "1.2.1"
+    }
+
+    // "standard" has no notification listener, so Google Play Protect does not block it when it is
+    // sideloaded. "notifications" adds the optional notification previews (see docs/INSTALL.md).
+    flavorDimensions += "features"
+    productFlavors {
+        create("standard") { dimension = "features" }
+        create("notifications") { dimension = "features" }
     }
 
     // Signing material comes only from the environment (CI secrets); nothing is committed.

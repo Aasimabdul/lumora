@@ -32,6 +32,7 @@ import com.simbuild.lumora.core.notifications.NotificationDisplayDuration
 import com.simbuild.lumora.core.settings.AppSettings
 import com.simbuild.lumora.LumoraApp
 import com.simbuild.lumora.service.NotificationAccess
+import com.simbuild.lumora.ui.SectionCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -56,6 +57,32 @@ fun PrivacyScreen(
         }
         owner.lifecycle.addObserver(observer)
         onDispose { owner.lifecycle.removeObserver(observer) }
+    }
+
+    if (!NotificationAccess.isAvailable(context)) {
+        Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp)) {
+            Text("Permissions & Privacy", style = MaterialTheme.typography.headlineMedium)
+            SectionCard("Notification previews") {
+                Text(
+                    "This build of Lumora does not include notification previews, so it never asks for Notification access. " +
+                        "That is why Google Play Protect lets it install. " +
+                        "To use previews, install the \"notifications\" build instead (see docs/INSTALL.md in the repository).",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+            SectionCard("Permissions") {
+                Text(
+                    "Lumora requests no permissions: no notifications, photos, contacts, SMS, location, microphone, storage, overlay or accessibility access. " +
+                        "Background photos are chosen with the system photo picker.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+        }
+        return
     }
 
     val p = settings.preview

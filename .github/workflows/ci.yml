@@ -40,30 +40,39 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       # :app is part of the build, so Gradle needs the Android SDK even for :core:test.
       - name: Unit tests
-        run: ./gradlew :core:test :app:testDebugUnitTest
+        run: ./gradlew :core:test :app:testStandardDebugUnitTest :app:testNotificationsDebugUnitTest
       - name: Lint
         run: |
-          ./gradlew :app:lintDebug || {
+          ./gradlew :app:lintStandardDebug :app:lintNotificationsDebug || {
             echo "---- lint report ----"
-            cat app/build/intermediates/lint_intermediate_text_report/debug/lintReportDebug/lint-results-debug.txt || true
+            find app/build -name 'lint-results-*.txt' -exec cat {} \; || true
             exit 1
           }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: lint-report
-          path: app/build/reports/lint-results-debug.html
+          path: app/build/reports/lint-results-*.html
           if-no-files-found: ignore
-      - name: Build debug APK
-        run: ./gradlew :app:assembleDebug
-      - name: Inspect APK
+      - name: Build debug APKs
+        run: ./gradlew :app:assembleStandardDebug :app:assembleNotificationsDebug
+      - name: Inspect APKs
         run: |
-          APK=$(ls app/build/outputs/apk/debug/*.apk | head -n1)
-          test -s "$APK"
           AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | tail -n1)
-          "$AAPT2" dump badging "$APK" | grep -E "^package:|uses-permission"
+          STD=$(ls app/build/outputs/apk/standard/debug/*.apk | head -n1)
+          NOT=$(ls app/build/outputs/apk/notifications/debug/*.apk | head -n1)
+          test -s "$STD"; test -s "$NOT"
+          for APK in "$STD" "$NOT"; do
+            echo "== $APK"
+            "$AAPT2" dump badging "$APK" | grep -E "^package:|uses-permission"
+          done
+          # The standard build must not declare the notification listener (Play Protect blocks it); the notifications build must.
+          if "$AAPT2" dump xmltree --file AndroidManifest.xml "$STD" | grep -q "BIND_NOTIFICATION_LISTENER_SERVICE"; then
+            echo "standard APK declares the notification listener"; exit 1
+          fi
+          "$AAPT2" dump xmltree --file AndroidManifest.xml "$NOT" | grep -q "BIND_NOTIFICATION_LISTENER_SERVICE"
       - uses: actions/upload-artifact@v4
         with:
-          name: lumora-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: lumora-debug-apks
+          path: app/build/outputs/apk/*/debug/*.apk
           if-no-files-found: error

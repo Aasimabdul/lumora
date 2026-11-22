@@ -13,6 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.simbuild.lumora.service.NotificationAccess
 import androidx.compose.ui.unit.dp
 
 /** First-run introduction: what Lumora is, what it is not, and what it will and won't ask for. */
@@ -25,7 +27,14 @@ fun OnboardingScreen(onDone: () -> Unit, modifier: Modifier = Modifier) {
         Point("A clock for your night stand", "Pick from 40 themes, then tap Start standby. The screen stays on and shows a large, calm clock on black.")
         Point("Make it yours", "Change the font, size, colour and position, or save your own theme with a colour or photo background.")
         Point("Not a lock screen", "Lumora is an app-level standby clock. It does not replace your lock screen or your phone's Always-On Display.")
-        Point("Nothing required", "Lumora asks for no permissions to work. Notification previews are optional and off by default; if you turn them on, Android will ask you for notification access, and message text is only ever kept in memory.")
+        Point(
+            "Nothing required",
+            if (NotificationAccess.isAvailable(LocalContext.current)) {
+                "Lumora asks for no permissions to work. Notification previews are optional and off by default; if you turn them on, Android will ask you for notification access, and message text is only ever kept in memory."
+            } else {
+                "Lumora asks for no permissions at all. This build has no notification previews, so Android's Notification access is never requested."
+            },
+        )
         Spacer(Modifier.height(24.dp))
         Button(onClick = onDone, modifier = Modifier.fillMaxWidth()) { Text("Get started") }
     }

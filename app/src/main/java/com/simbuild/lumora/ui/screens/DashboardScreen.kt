@@ -23,12 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.simbuild.lumora.core.settings.AppSettings
 import com.simbuild.lumora.core.theme.CustomTheme
 import com.simbuild.lumora.core.theme.ThemeCatalog
+import com.simbuild.lumora.service.NotificationAccess
 import com.simbuild.lumora.ui.SectionCard
 import com.simbuild.lumora.ui.clock.ThemeSurface
 import com.simbuild.lumora.ui.clock.rememberClockFrame
@@ -89,7 +91,8 @@ fun DashboardScreen(
         SectionCard("Right now") {
             StatusLine("Clock", if (settings.use24Hour) "24-hour" else "12-hour")
             StatusLine("Font", settings.font.label)
-            StatusLine("Notification previews", if (settings.preview.enabled) "On" else "Off")
+            val previewsInBuild = NotificationAccess.isAvailable(LocalContext.current)
+            StatusLine("Notification previews", if (!previewsInBuild) "Not in this build" else if (settings.preview.enabled) "On" else "Off")
             StatusLine("Charging automation", if (settings.chargingAutomation) "On" else "Off")
         }
 
