@@ -48,7 +48,7 @@ jobs:
             find app/build -name 'lint-results-*.txt' -exec cat {} \; || true
             exit 1
           }
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: lint-report
@@ -71,7 +71,7 @@ jobs:
             echo "standard APK declares the notification listener"; exit 1
           fi
           "$AAPT2" dump xmltree --file AndroidManifest.xml "$NOT" | grep -q "BIND_NOTIFICATION_LISTENER_SERVICE"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: lumora-debug-apks
           path: app/build/outputs/apk/*/debug/*.apk
