@@ -1,5 +1,4 @@
-# NOTE: not executed yet (no GitHub access from the authoring environment).
-# Treat the first run as its verification; adjust build-mode if CodeQL requires it.
+# 'none' build mode saw no Kotlin source in CI, so the project is compiled manually for CodeQL.
 name: CodeQL
 
 on:
@@ -18,10 +17,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
       - uses: github/codeql-action/init@v3
         with:
           languages: java-kotlin
-          build-mode: none
+          build-mode: manual
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+      - name: Build for analysis
+        run: ./gradlew --no-daemon :core:compileKotlin :app:compileDebugKotlin
       - uses: github/codeql-action/analyze@v3
         with:
           category: "/language:java-kotlin"
